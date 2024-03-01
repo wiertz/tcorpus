@@ -1,0 +1,30 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "tcorpus"
+version = "2024.2.29"
+authors = [
+  { name="Thilo Wiertz", email="mail@thilowiertz.de" },
+]
+description = "High level tools and wrappers for text corpus preparation and analysis"
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+  "pandas",
+  "flair",
+  "syntok"
+]
+
+[project.urls]
+Homepage = "https://github.com/wiertz/tcorpus"
+Issues = "https://github.com/wiertz/tcorpus/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["tcorpus"]
