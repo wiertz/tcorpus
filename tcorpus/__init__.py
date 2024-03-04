@@ -1,2 +1,2 @@
-from .tner import ner
+from .tner import ner, tagger
 from .tsegment import segment
