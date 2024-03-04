@@ -24,7 +24,13 @@ def linearize_labels(label):
         )
 
 
-def tagger(flair_model_name):
+def init_tagger(flair_model_name):
+    """
+    Load tagger model into memory.
+
+    :param flair_model_name: name of the flair model to use.
+    :return: instance of flair SequenceTagger
+    """
     return SequenceTagger.load(flair_model_name)
 
 
@@ -33,7 +39,7 @@ def ner(sentences, tagger, text_col="text", keep_cols=None):
     Perform named entity recognition.
 
     :param sentences: data frame with sentences
-    :param tagger: tagger instance created by tagger(model_name)
+    :param tagger: tagger instance created by init_tagger(flair_model_name)
     :param text_col: column in sentences containing sentence text
     :param keep_cols: columns in texts to keep in return data frame
     :return: data frame of named entities in sentences
