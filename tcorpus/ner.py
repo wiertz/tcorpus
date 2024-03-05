@@ -46,8 +46,9 @@ def ner(sentences, tagger, text_col="text", keep_cols=None, max_sentence_len=500
     labels = flair_sentences.apply(
         lambda sentence: [span.to_dict() for span in sentence.get_spans("ner")]
     ).explode()
+    labels = labels[labels.notna()]
 
-    entities = pd.DataFrame(index=labels.index)
+    entities = pd.DataFrame()
 
     # add columns with label information to entnties
     entities["text"] = labels.apply(lambda x: x["text"])
