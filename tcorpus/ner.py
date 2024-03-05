@@ -4,27 +4,6 @@ import pandas as pd
 from torch.cuda import empty_cache
 
 
-def linearize_labels(label):
-    """
-    Convert label information from flair object to pd Series
-
-    :param label: instance of flair label
-    :return: pd series of label text, start pos, end pos, label, confidence
-    """
-    if pd.isna(label):
-        return pd.Series([])
-    else:
-        return pd.Series(
-            [
-                label["text"],
-                label["start_pos"],
-                label["end_pos"],
-                label["labels"][0]["value"],
-                label["labels"][0]["confidence"],
-            ]
-        )
-
-
 def init_tagger(flair_model_name):
     """
     Load tagger model into memory.
@@ -55,6 +34,7 @@ def ner(sentences, tagger, text_col="text", keep_cols=None, max_sentence_len=500
             "at least one column in keep_cols is missing in sentences data frame"
         )
 
+    # create copy to avoid manipulation of original df
     sentences_copy = sentences.copy()
     sentences_copy[text_col] = sentences_copy[text_col].astype(str)
     if max_sentence_len is not None and max_sentence_len > 0:
@@ -63,18 +43,21 @@ def ner(sentences, tagger, text_col="text", keep_cols=None, max_sentence_len=500
         ]
     flair_sentences = sentences_copy[text_col].apply(Sentence)
     tagger.predict(flair_sentences.to_list())
-    entities = flair_sentences.apply(
+    labels = flair_sentences.apply(
         lambda sentence: [span.to_dict() for span in sentence.get_spans("ner")]
     ).explode()
-    entities = entities[entities.notna()].to_frame().apply(linearize_labels)
-    entities.columns = [
-        "entity_text",
-        "start_pos",
-        "end_pos",
-        "entity_type",
-        "confidence",
-    ]
+
+    entities = pd.DataFrame(index=labels.index)
+
+    # add columns with label information to entnties
+    entities["text"] = labels.apply(lambda x: x["text"])
+    entities["start_pos"] = labels.apply(lambda x: x["start_pos"])
+    entities["end_pos"] = labels.apply(lambda x: x["end_pos"])
+    entities["value"] = labels.apply(lambda x: x["labels"][0]["value"])
+    entities["confidence"] = labels.apply(lambda x: x["labels"][0]["confidence"])
     entities = entities.join(sentences_copy[keep_cols])
     entities.reset_index(names="sentence_id", inplace=True)
+
+    # empty cuda cache
     empty_cache()
     return entities
