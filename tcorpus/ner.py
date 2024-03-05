@@ -55,7 +55,7 @@ def ner(sentences, tagger, text_col="text", keep_cols=None, max_sentence_len=500
         )
 
     sentences_copy = sentences.copy()
-    sentences_copy = sentences_copy[text_col].astype(str)
+    sentences_copy[text_col] = sentences_copy[text_col].astype(str)
     if max_sentence_len is not None or max_sentence_len > 0:
         sentences_copy = sentences_copy[
             sentences_copy[text_col].apply(len) <= max_sentence_len
