@@ -1,6 +1,7 @@
 from flair.data import Sentence
 from flair.models import SequenceTagger
 import pandas as pd
+from torch.cuda import empty_cache
 
 
 def linearize_labels(label):
@@ -56,7 +57,7 @@ def ner(sentences, tagger, text_col="text", keep_cols=None, max_sentence_len=500
 
     sentences_copy = sentences.copy()
     sentences_copy[text_col] = sentences_copy[text_col].astype(str)
-    if max_sentence_len is not None or max_sentence_len > 0:
+    if max_sentence_len is not None and max_sentence_len > 0:
         sentences_copy = sentences_copy[
             sentences_copy[text_col].apply(len) <= max_sentence_len
         ]
@@ -75,4 +76,5 @@ def ner(sentences, tagger, text_col="text", keep_cols=None, max_sentence_len=500
     ]
     entities = entities.join(sentences_copy[keep_cols])
     entities.reset_index(names="sentence_id", inplace=True)
+    empty_cache()
     return entities
