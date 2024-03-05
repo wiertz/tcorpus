@@ -66,7 +66,7 @@ def ner(sentences, tagger, text_col="text", keep_cols=None, max_sentence_len=500
     entities = flair_sentences.apply(
         lambda sentence: [span.to_dict() for span in sentence.get_spans("ner")]
     ).explode()
-    entities = entities[entities.notna()].apply(linearize_labels)
+    entities = entities[entities.notna()].to_frame().apply(linearize_labels)
     entities.columns = [
         "entity_text",
         "start_pos",
