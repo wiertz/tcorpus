@@ -8,3 +8,5 @@ launch.json
 
 # ignore for now
 tests/
+local/
+test-*
