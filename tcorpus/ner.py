@@ -14,13 +14,7 @@ def init_tagger(flair_model_name):
     return SequenceTagger.load(flair_model_name)
 
 
-def ner(
-    sentences,
-    tagger,
-    text_col="text",
-    keep_cols=None,
-    max_sentence_len=5000,
-):
+def ner(sentences, tagger, text_col="text", keep_cols=None):
     """
     Perform named entity recognition.
 
@@ -42,17 +36,15 @@ def ner(
 
     # create copy to avoid manipulation of original df
     sentences_copy = sentences.copy()
-    sentences_copy[text_col] = sentences_copy[text_col].astype(str)
-    if max_sentence_len is not None and max_sentence_len > 0:
-        sentences_copy = sentences_copy[
-            sentences_copy[text_col].apply(len) <= max_sentence_len
-        ]
 
-    flair_sentences = sentences_copy[text_col]
-    flair_sentences.apply(Sentence).apply(tagger.predict)
-    labels = flair_sentences.apply(
-        lambda sentence: [span.to_dict() for span in sentence.get_spans()]
-    ).explode()
+    sentences_list = sentences_copy[text_col].astype(str).to_list()
+    flair_sentences = [Sentence(s) for s in sentences_list]
+    for s in flair_sentences:
+        tagger.predict(s)
+
+    labels = [[span.to_dict() for span in s.get_spans()] for s in flair_sentences]
+    labels = pd.Series(labels, index=sentences_copy.index)
+    labels = labels.explode()
     labels = labels[labels.notna()]
 
     entities = pd.DataFrame()
@@ -68,4 +60,5 @@ def ner(
 
     # empty cuda cache
     empty_cache()
+
     return entities
