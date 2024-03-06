@@ -22,7 +22,6 @@ dependencies = [
   "flair",
   "syntok"
 ]
-dynamic = ["version"]
 
 [project.urls]
 Homepage = "https://github.com/wiertz/tcorpus"
