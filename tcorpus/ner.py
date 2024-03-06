@@ -17,7 +17,6 @@ def init_tagger(flair_model_name):
 def ner(
     sentences,
     tagger,
-    types=None,
     text_col="text",
     keep_cols=None,
     max_sentence_len=5000,
@@ -27,7 +26,6 @@ def ner(
 
     :param sentences: data frame with sentences
     :param tagger: tagger instance created by init_tagger(flair_model_name)
-    :param types: None to get all entities or list of label types (e.g. 'LOC' or 'PER') to filter for
     :param text_col: column in sentences containing sentence text
     :param keep_cols: columns in texts to keep in return data frame
     :param max_sentence_len: maximum number of characters per sentence (avoid memory issues with flair)
