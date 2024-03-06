@@ -49,8 +49,9 @@ def ner(
         sentences_copy = sentences_copy[
             sentences_copy[text_col].apply(len) <= max_sentence_len
         ]
-    flair_sentences = sentences_copy[text_col].apply(Sentence)
-    tagger.predict(flair_sentences.to_list())
+
+    flair_sentences = sentences_copy[text_col]
+    flair_sentences.apply(Sentence).apply(tagger.predict)
     labels = flair_sentences.apply(
         lambda sentence: [span.to_dict() for span in sentence.get_spans()]
     ).explode()
