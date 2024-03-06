@@ -18,9 +18,11 @@ classifiers = [
 ]
 dependencies = [
   "pandas",
+  "numpy",
   "flair",
   "syntok"
 ]
+dynamic = ["version"]
 
 [project.urls]
 Homepage = "https://github.com/wiertz/tcorpus"
@@ -28,3 +30,4 @@ Issues = "https://github.com/wiertz/tcorpus/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["tcorpus"]
+[tool.hatch.version]
