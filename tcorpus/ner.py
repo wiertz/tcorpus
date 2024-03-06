@@ -36,8 +36,9 @@ def ner(sentences, tagger, text_col="text", keep_cols=None):
 
     # create copy to avoid manipulation of original df
     sentences_copy = sentences.copy()
+    sentences_copy = sentences_copy[sentences_copy[text_col].notna()]
 
-    sentences_list = sentences_copy[text_col].astype(str).to_list()
+    sentences_list = sentences_copy[text_col].to_list()
     flair_sentences = [Sentence(s) for s in sentences_list]
     for s in flair_sentences:
         tagger.predict(s)
