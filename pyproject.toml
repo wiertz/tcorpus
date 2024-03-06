@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "tcorpus"
-version = "2024.3.5.5"
+version = "2024.3.6"
 authors = [
   { name="Thilo Wiertz", email="mail@thilowiertz.de" },
 ]
