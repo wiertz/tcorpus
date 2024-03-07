@@ -43,7 +43,7 @@ def ner(sentences, tagger, text_col="text", keep_cols=None):
     labels = []
     for sentence in tqdm(sentences_list):
         flair_sentence = Sentence(sentence)
-        tagger.predict(sentence)
+        tagger.predict(flair_sentence)
         sentence_labels = [span.to_dict() for span in flair_sentence.get_spans()]
         labels.append(sentence_labels)
         empty_cache()
