@@ -1,4 +1,7 @@
 import syntok.segmenter as segmenter
+from tqdm import tqdm
+
+tqdm.pandas()
 
 
 def split_string(string, level):
@@ -54,7 +57,10 @@ def segment(texts, level, text_col="text", keep_cols=None):
         )
 
     df = (
-        texts[text_col].apply(split_string, level=level).explode().to_frame("paragraph")
+        texts[text_col]
+        .progress_apply(split_string, level=level)
+        .explode()
+        .to_frame("paragraph")
     )
     df = df.join(texts[keep_cols])
     df.reset_index(names="_".join([text_col, "id"]), inplace=True)
