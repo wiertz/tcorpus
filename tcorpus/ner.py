@@ -2,6 +2,7 @@ from flair.data import Sentence
 from flair.models import SequenceTagger
 import pandas as pd
 from torch.cuda import empty_cache
+from tqdm import tqdm
 
 
 def init_tagger(flair_model_name):
@@ -39,11 +40,14 @@ def ner(sentences, tagger, text_col="text", keep_cols=None):
     sentences_copy = sentences_copy[sentences_copy[text_col].notna()]
 
     sentences_list = sentences_copy[text_col].to_list()
-    flair_sentences = [Sentence(s) for s in sentences_list]
-    for s in flair_sentences:
-        tagger.predict(s)
+    labels = []
+    for sentence in tqdm(sentences_list):
+        flair_sentence = Sentence(sentence)
+        tagger.predict(sentence)
+        sentence_labels = [span.to_dict() for span in flair_sentence.get_spans()]
+        labels.append(sentence_labels)
+        empty_cache()
 
-    labels = [[span.to_dict() for span in s.get_spans()] for s in flair_sentences]
     labels = pd.Series(labels, index=sentences_copy.index)
     labels = labels.explode()
     labels = labels[labels.notna()]
@@ -56,10 +60,8 @@ def ner(sentences, tagger, text_col="text", keep_cols=None):
     entities["end_pos"] = labels.apply(lambda x: x["end_pos"])
     entities["value"] = labels.apply(lambda x: x["labels"][0]["value"])
     entities["confidence"] = labels.apply(lambda x: x["labels"][0]["confidence"])
-    entities = entities.join(sentences_copy[keep_cols])
+    if keep_cols is not None:
+        entities = entities.join(sentences_copy[keep_cols])
     entities.reset_index(names="sentence_id", inplace=True)
-
-    # empty cuda cache
-    empty_cache()
 
     return entities
