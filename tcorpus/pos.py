@@ -2,6 +2,7 @@
 from flair.nn import Classifier
 from flair.data import Sentence
 import pandas as pd
+from tqdm import tqdm
 
 
 def init_tagger(flair_model_name):
